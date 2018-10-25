@@ -1,7 +1,6 @@
 package com.tictactoe.view;
 
 import com.tictactoe.model.Player;
-
 import java.util.List;
 
 public interface GameView {

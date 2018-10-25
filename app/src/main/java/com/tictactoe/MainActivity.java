@@ -16,12 +16,8 @@ import com.tictactoe.model.Player;
 import com.tictactoe.presenter.GamePresenter;
 import com.tictactoe.view.GameView;
 
-import org.w3c.dom.Text;
-
 import java.sql.SQLException;
 import java.util.List;
-
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, GameView {
 
@@ -122,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void showWinner(Player player) {
-        Toast toast = Toast.makeText(MainActivity.this,player.getName() +"wins!", Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(MainActivity.this,player.getName() +" wins!", Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
         disableAll();

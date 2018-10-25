@@ -10,5 +10,7 @@
     <string name="draws">Draws:</string>
     <string name="p1_wins">P1 wins:</string>
     <string name="p2_wins">P2 wins:</string>
+    <string name="toast_p1_wins">Player 1 wins!</string>
+    <string name="toast_p2_wins">Player 2 wins!</string>
 
 </resources>
