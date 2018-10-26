@@ -16,7 +16,7 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "tictactoe.db";
-    private Dao<Player, Integer> playerEntityDao;
+    private Dao<Player, Integer> mPlayerEntityDao;
 
 
     public DBHelper(Context context) {
@@ -33,8 +33,8 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
             Player player1 = new Player("Player 1");
             Player player2 = new Player("Player 2");
 
-            playerEntityDao.create(player1);
-            playerEntityDao.create(player2);
+            mPlayerEntityDao.create(player1);
+            mPlayerEntityDao.create(player2);
 
         } catch (Exception e) {
             // TODO: handle exception
@@ -60,17 +60,16 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
     }
 
     public Dao<Player, Integer> getPlayerEntityDao() throws Exception {
-        if (playerEntityDao == null) {
-            playerEntityDao = getDao(Player.class);
+        if (mPlayerEntityDao == null) {
+            mPlayerEntityDao = getDao(Player.class);
         }
-        return playerEntityDao;
+        return mPlayerEntityDao;
     }
 
     @Override
     public void close() {
         // TODO Auto-generated method stub
         super.close();
-        playerEntityDao = null;
-
+        mPlayerEntityDao = null;
     }
 }

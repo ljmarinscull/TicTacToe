@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tictactoe.dagger.DaggerComponentApp;
+import com.tictactoe.dagger.ModuleApp;
 import com.tictactoe.model.Player;
 import com.tictactoe.presenter.GamePresenter;
 import com.tictactoe.view.GameView;
@@ -19,17 +21,25 @@ import com.tictactoe.view.GameView;
 import java.sql.SQLException;
 import java.util.List;
 
+
+import javax.inject.Inject;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, GameView {
 
     private Button b11,b12,b13,b21,b22,b23,b31,b32,b33,restart,reset;
     private TextView player1Txt,player2Txt,p1WinsValue,p2WinsValue,drawsValue;
 
-    private GamePresenter presenter;
+    @Inject GamePresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        DaggerComponentApp.builder()
+                .moduleApp(new ModuleApp(this))
+                .build()
+                .inject(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
@@ -77,22 +87,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         b32.setOnClickListener(this);
         b33.setOnClickListener(this);
 
-        presenter = new GamePresenter(this);
-        presenter.loadGame();
+        mPresenter.loadGame();
     }
 
     @Override
     public void onClick(View v) {
 
         if(v.getId() == R.id.reset){
-            presenter.onReset();
+            mPresenter.onReset();
             return;
         } else if(v.getId() == R.id.restart){
-            presenter.onRestart();
+            mPresenter.onRestart();
             return;
         }
         try {
-            presenter.onHandleTapButton(v.getId(),v.getTag());
+            mPresenter.onHandleTapButton(v.getId(),v.getTag());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -140,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         resetCell();
         player1Txt.setVisibility(View.VISIBLE);
         player2Txt.setVisibility(View.INVISIBLE);
-        presenter.loadGame();
+        mPresenter.loadGame();
     }
 
     @Override

@@ -9,26 +9,26 @@ import com.tictactoe.view.GameView;
 
 import java.sql.SQLException;
 
+import javax.inject.Inject;
+
 import static com.tictactoe.presenter.GamePresenter.PLAYER.P1;
 import static com.tictactoe.presenter.GamePresenter.PLAYER.P2;
-import static java.lang.Enum.valueOf;
-
-
 
 public class GamePresenter {
 
-    private GameView view;
-    private PLAYER currentPlayer = P1;
-    private int winner;
+    private GameView mView;
+    private PLAYER mCurrentPlayer = P1;
+    private int mWinner;
     private DBHelper mDBHelper;
-    private boolean isWinner;
-    private Player player = null;
-    private int tapCount= 0;
+    private boolean mIsWinner;
+    private Player mPlayer = null;
+    private int mTapCount= 0;
     private Dao<Player, Integer> mPlayerEntityDao;
-    private short[][] matrix = new short[3][3];
+    private short[][] mMatrix = new short[3][3];
 
+    @Inject
     public GamePresenter(GameView gameView){
-        this.view = gameView;
+        this.mView = gameView;
         resetMatrix();
         try {
             mPlayerEntityDao = getHelper().getPlayerEntityDao();
@@ -37,117 +37,79 @@ public class GamePresenter {
         }
     }
 
-   /* public void onHandleTapButton(int res, Object tag){
-        tapCount++;
-        String tagStr = (String) tag;
-        String pos[] =  tagStr.split("_");
-        matrix[Integer.valueOf(pos[0])][Integer.valueOf(pos[1])] = (short) currentPlayer.getNumber();
-
-        isWinner = winner(currentPlayer.getNumber());
-
-        try {
-            if(isWinner){
-                player = mPlayerEntityDao.queryForId(currentPlayer.getNumber());
-                player.addWins();
-                mPlayerEntityDao.update(player);
-                resetMatrix();
-
-                if (currentPlayer == P1){
-                    view.onTapPlayer1(res,isWinner);
-                } else {
-                    player = mPlayerEntityDao.queryForId((currentPlayer.getNumber()));
-                    currentPlayer = P1;
-                    view.onTapPlayer2(res,isWinner);
-                }
-            } else {
-                if(currentPlayer == P1)
-                    currentPlayer = P2;
-                currentPlayer = P1;
-                if(tapCount == 9){
-                    Player player1 = mPlayerEntityDao.queryForId((1));
-                    player1.addDraws();
-                    mPlayerEntityDao.update(player1);
-                    view.onDraws();
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }*/
-
     public void onHandleTapButton(int res, Object tag) throws SQLException {
-        tapCount++;
+        mTapCount++;
         String tagStr = (String) tag;
         String pos[] =  tagStr.split("_");
-        matrix[Integer.valueOf(pos[0])][Integer.valueOf(pos[1])] = (short) currentPlayer.getNumber();
+        mMatrix[Integer.valueOf(pos[0])][Integer.valueOf(pos[1])] = (short) mCurrentPlayer.getNumber();
 
-        isWinner = winner(currentPlayer.getNumber());
-        if (isWinner){
-            winner = currentPlayer.getNumber();
+        mIsWinner = mWinner(mCurrentPlayer.getNumber());
+        if (mIsWinner){
+            mWinner = mCurrentPlayer.getNumber();
         }
 
-        if (currentPlayer == P1){
-            if(!isWinner) currentPlayer = P2;
-            view.onTapPlayer1(res);
+        if (mCurrentPlayer == P1){
+            if(!mIsWinner) mCurrentPlayer = P2;
+            mView.onTapPlayer1(res);
         } else {
-            currentPlayer = P1;
-            view.onTapPlayer2(res);
+            mCurrentPlayer = P1;
+            mView.onTapPlayer2(res);
         }
 
-        if(isWinner){
-            player = mPlayerEntityDao.queryForId(winner);
-            player.addWins();
-            mPlayerEntityDao.update(player);
-            view.updateGame(mPlayerEntityDao.queryForAll());
-            view.showWinner(player);
+        if(mIsWinner){
+            mPlayer = mPlayerEntityDao.queryForId(mWinner);
+            mPlayer.addWins();
+            mPlayerEntityDao.update(mPlayer);
+            mView.updateGame(mPlayerEntityDao.queryForAll());
+            mView.showWinner(mPlayer);
             resetMatrix();
         } else {
-            if(tapCount == 9){
-                currentPlayer = P1;
-                Player player1 = mPlayerEntityDao.queryForId((1));
-                player1.addDraws();
-                mPlayerEntityDao.update(player1);
-                view.updateGame(mPlayerEntityDao.queryForAll());
+            if(mTapCount == 9){
+                mCurrentPlayer = P1;
+                Player mPlayer1 = mPlayerEntityDao.queryForId((1));
+                mPlayer1.addDraws();
+                mPlayerEntityDao.update(mPlayer1);
+                mView.updateGame(mPlayerEntityDao.queryForAll());
                 resetMatrix();
-                view.onDraws();
+                mView.onDraws();
             }
         }
     }
 
     public void onReset(){
-        tapCount = 0;
-        currentPlayer = P1;
+        mTapCount = 0;
+        mCurrentPlayer = P1;
 
         resetMatrix();
         resetDataBase();
-        view.onResetGame();
+        mView.onResetGame();
     }
 
     public void onRestart(){
-        tapCount = 0;
-        currentPlayer = P1;
+        mTapCount = 0;
+        mCurrentPlayer = P1;
 
         resetMatrix();
-        view.onRestartGame();
+        mView.onRestartGame();
     }
 
-    private boolean winner(int ordinal){
+    private boolean mWinner(int ordinal){
 
-        if(ordinal == matrix[0][0] && ordinal == matrix[0][1] && ordinal == matrix[0][2] ) {
+        if(ordinal == mMatrix[0][0] && ordinal == mMatrix[0][1] && ordinal == mMatrix[0][2] ) {
             return true;
-        } else if(ordinal == matrix[1][0] && ordinal == matrix[1][1] && ordinal == matrix[1][2] ){
+        } else if(ordinal == mMatrix[1][0] && ordinal == mMatrix[1][1] && ordinal == mMatrix[1][2] ){
             return true;
-        } else if(ordinal == matrix[2][0] && ordinal == matrix[2][1] && ordinal == matrix[2][2] ){
+        } else if(ordinal == mMatrix[2][0] && ordinal == mMatrix[2][1] && ordinal == mMatrix[2][2] ){
             return true;
-        }  else  if(ordinal == matrix[0][0] && ordinal == matrix[1][0] && ordinal == matrix[2][0] ) {
+        }  else  if(ordinal == mMatrix[0][0] && ordinal == mMatrix[1][0] && ordinal == mMatrix[2][0] ) {
             return true;
-        } else if(ordinal == matrix[0][1] && ordinal == matrix[1][1] && ordinal == matrix[2][1] ){
+        } else if(ordinal == mMatrix[0][1] && ordinal == mMatrix[1][1] && ordinal == mMatrix[2][1] ){
             return true;
-        } else if(ordinal == matrix[0][2] && ordinal == matrix[1][2] && ordinal == matrix[2][2] ){
+        } else if(ordinal == mMatrix[0][2] && ordinal == mMatrix[1][2] && ordinal == mMatrix[2][2] ){
             return true;
-        } else if(ordinal == matrix[0][0] && ordinal == matrix[1][1] && ordinal == matrix[2][2] ){
+        } else if(ordinal == mMatrix[0][0] && ordinal == mMatrix[1][1] && ordinal == mMatrix[2][2] ){
             return true;
-        } else if(ordinal == matrix[0][2] && ordinal == matrix[1][1] && ordinal == matrix[2][0] ){
+        } else if(ordinal == mMatrix[0][2] && ordinal == mMatrix[1][1] && ordinal == mMatrix[2][0] ){
             return true;
         }
 
@@ -156,21 +118,21 @@ public class GamePresenter {
 
     private DBHelper getHelper() {
         if (mDBHelper == null) {
-            mDBHelper = OpenHelperManager.getHelper((MainActivity)this.view, DBHelper.class);
+            mDBHelper = OpenHelperManager.getHelper((MainActivity)this.mView, DBHelper.class);
         }
         return mDBHelper;
     }
 
     private void resetDataBase(){
         try {
-            Player player1 = mPlayerEntityDao.queryForId(1);
-            Player player2 = mPlayerEntityDao.queryForId(2);
-            player1.setDraws(0);
-            player1.setWins(0);
-            mPlayerEntityDao.update(player1);
-            player2.setDraws(0);
-            player2.setWins(0);
-            mPlayerEntityDao.update(player2);
+            Player mPlayer1 = mPlayerEntityDao.queryForId(1);
+            Player mPlayer2 = mPlayerEntityDao.queryForId(2);
+            mPlayer1.setDraws(0);
+            mPlayer1.setWins(0);
+            mPlayerEntityDao.update(mPlayer1);
+            mPlayer2.setDraws(0);
+            mPlayer2.setWins(0);
+            mPlayerEntityDao.update(mPlayer2);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -178,8 +140,8 @@ public class GamePresenter {
 
     public void loadGame(){
         try {
-            currentPlayer = P1;
-            view.onLoadGame(mPlayerEntityDao.queryForAll());
+            mCurrentPlayer = P1;
+            mView.onLoadGame(mPlayerEntityDao.queryForAll());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -187,22 +149,22 @@ public class GamePresenter {
 
     private void resetMatrix(){
         for (int i = 0;i<3;i++){
-            matrix[i][0] = -1;
-            matrix[i][1] = -1;
-            matrix[i][2] = -1;
+            mMatrix[i][0] = -1;
+            mMatrix[i][1] = -1;
+            mMatrix[i][2] = -1;
         }
     }
 
     public enum PLAYER{ P1(1),P2(2);
 
-        private final int number;
+        private final int mNumber;
 
         private PLAYER(int number) {
-            this.number = number;
+            this.mNumber = number;
         }
 
         public int getNumber() {
-            return number;
+            return mNumber;
         }
     }
 

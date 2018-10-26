@@ -24,7 +24,7 @@ public class MainActivityEspressoTest {
             new ActivityTestRule<>(MainActivity.class);
 
     @Test
-    public void ensureWinnerScoreWork() {
+    public void ensurePlayerOneWinWork() {
         onView(withId(R.id.b11)).perform(click());
         onView(withId(R.id.b12)).perform(click());
 
@@ -38,5 +38,46 @@ public class MainActivityEspressoTest {
         onView(withId(R.id.p1_wins_value)).check(matches(withText("1")));
         onView(withId(R.id.reset)).perform(click());
         onView(withId(R.id.p1_wins_value)).check(matches(withText("0")));
+    }
+
+    @Test
+    public void ensurePlayerTwoWinScoreWork() {
+        onView(withId(R.id.b13)).perform(click());
+        onView(withId(R.id.b12)).perform(click());
+
+        onView(withId(R.id.b21)).perform(click());
+        onView(withId(R.id.b22)).perform(click());
+
+        onView(withId(R.id.b31)).perform(click());
+        onView(withId(R.id.b32)).perform(click());
+
+        onView(withText(R.string.toast_p2_wins)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView())))).check(matches(isDisplayed()));
+
+        onView(withId(R.id.p2_wins_value)).check(matches(withText("1")));
+        onView(withId(R.id.reset)).perform(click());
+        onView(withId(R.id.p2_wins_value)).check(matches(withText("0")));
+    }
+
+    @Test
+    public void ensureDrawsScoreWork() {
+        onView(withId(R.id.b11)).perform(click());
+        onView(withId(R.id.b12)).perform(click());
+
+        onView(withId(R.id.b13)).perform(click());
+        onView(withId(R.id.b22)).perform(click());
+
+        onView(withId(R.id.b33)).perform(click());
+        onView(withId(R.id.b23)).perform(click());
+
+        onView(withId(R.id.b21)).perform(click());
+        onView(withId(R.id.b31)).perform(click());
+
+        onView(withId(R.id.b32)).perform(click());
+
+        onView(withText(R.string.toast_draws)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView())))).check(matches(isDisplayed()));
+
+        onView(withId(R.id.draws_value)).check(matches(withText("1")));
+        onView(withId(R.id.reset)).perform(click());
+        onView(withId(R.id.draws_value)).check(matches(withText("0")));
     }
 }
